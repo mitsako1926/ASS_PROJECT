@@ -19,7 +19,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		users.add(new User("panos","dimis", "Ταμείο"));
+		users.add(new User("panos","dimis", "Εξυπηρέτηση"));
 		
 		pharmacies.add(new Pharmacy(123, "69696969", "poytsou street"));
 		
@@ -151,7 +151,45 @@ public class Main {
 				
 			case "Λογιστήριο":
 				
-				break;					
+				break;
+			case "Εξυπηρέτηση":
+				
+				while(true) {
+					clearConsole();
+					
+					int action = menuForSearch();
+					
+					if(action==2) {
+						break;
+					}
+					clearConsole();
+
+					while(true){
+						System.out.println("Eισάγετε για έξοδο → 0");
+						System.out.println("\nEισάγετε τον κωδικό του προϊόντος προς αναζήτηση");
+						System.out.print("Κωδικός προϊόντος: ");
+						int productCode = scanner.nextInt();
+						scanner.nextLine();
+						
+						if(productCode==0) {
+							break;
+						}
+						
+						Product product = searchProductCode(productCode);
+						
+						if(product!=null) {
+							clearConsole();
+							printProductDetails(product);
+						}else {
+							clearConsole();
+							System.out.println("Δεν βρέθηκε προϊόν με κωδικό: "+productCode+"\n");
+						}
+					}
+					
+					
+				}
+				
+				break;
 		}
 		
 		
@@ -198,14 +236,27 @@ public class Main {
 		System.out.println("════════════════════════════════════");
 		System.out.println("1. Διαχείριση Ορίων Αποθέματος");
 		System.out.println("2. Εκκρεμείς Παραγγελίες");
-		System.out.println("3. Αναζήτηση Προϊόντων");
-		System.out.println("4. Έξοδος");
+		System.out.println("3. Έξοδος");
 	}
 	
 	
 	
 	private static void menuForAccounting() {
 		
+	}
+	
+	
+	private static int menuForSearch() {
+		System.out.println("\n════════════════════════════════════");
+		System.out.println("         ΚΕΝΤΡΙΚΟ ΜΕΝΟΥ");
+		System.out.println("════════════════════════════════════");
+		System.out.println("1. Αναζήτηση Προϊόντων");
+		System.out.println("2. Έξοδος");
+		
+		int action = scanner.nextInt();
+		scanner.nextLine();
+		
+		return action;
 	}
 	
 	
@@ -295,7 +346,8 @@ public class Main {
 	
 	
 	private static void printProductDetails(Product p) {
-		System.out.println("\nΑπόθεμα: " + p.getStockLevel());
+		System.out.println("\nΌνομα: "+ p.getName());
+		System.out.println("Απόθεμα: " + p.getStockLevel());
 		System.out.println("Τιμή ανά μονάδα: " + p.getPrice());
 	}
 	
