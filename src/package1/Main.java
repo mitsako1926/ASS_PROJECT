@@ -3,6 +3,8 @@ package package1;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import package1.Order.OrderType;
+
 public class Main {
 
 	static Scanner scanner = new Scanner(System.in);
@@ -13,17 +15,28 @@ public class Main {
 	
 	static ArrayList<Pharmacy> pharmacies = new ArrayList<>(); 
 	
-	static ArrayList<Product> products = new ArrayList<>(); 
+	static ArrayList<Product> products = new ArrayList<>();
+	
+	static ArrayList<Order> orders = new ArrayList<>();
 
 	static double total = 0;
 	
 	public static void main(String[] args) {
 		
-		users.add(new User("panos","dimis", "Εξυπηρέτηση"));
+		users.add(new User("panos","dimis", "Αποθήκη"));
 		
 		pharmacies.add(new Pharmacy(123, "69696969", "poytsou street"));
 		
-		products.add(new Product(12345,"dildo",39.99,10,5));
+		products.add(new Product(1,"dildo",39.99,10,5));
+		products.add(new Product(12,"poutsos",9.99,33,5));
+		products.add(new Product(123,"mouni",12,12,5));
+		products.add(new Product(1234,"dawn",58,9,5));
+		
+		orders.add(new Order(1,"21/06/2008",900.3,OrderType.PURCHASE));
+		orders.add(new Order(2,"11/09/2008",203,OrderType.SALES));
+		orders.add(new Order(3,"1/06/2008",123,OrderType.SALES));
+		orders.add(new Order(4,"29/05/2008",334,OrderType.PURCHASE));
+		
 		
 		logIn();
 		
@@ -32,7 +45,122 @@ public class Main {
 		switch(loggedUser.getRole()) {
 			case "Αποθήκη":
 				
-				break;
+				while(true) {
+					clearConsole();
+					
+					automaticStockCheck();
+					
+					int action = menuForWarehouse();
+					
+					switch(action) {
+						case 1:
+							clearConsole();
+							while(true) {
+								System.out.println("════════════════════════════════════");
+								System.out.println("            ΠΡΟΪΟΝΤΑ");
+								System.out.println("════════════════════════════════════");
+								
+								for(Product p : products) {
+									printProductDetails(p);
+									
+									System.out.println("\nEισάγετε το κατώτερο όριο άσφαλείας ");
+									
+									int limit = scanner.nextInt();
+									scanner.nextLine();
+									
+									p.setSafetyLimit(limit);
+									
+									clearConsole();
+								}
+								
+								while(true) {
+									System.out.println("\nΤα όρια αποθέματος ενημερώθηκαν επιτυχώς.");
+									System.out.println("Εισάγετε 0 για επιστροφή στο κεντρικό μενού");
+									
+									int exit = scanner.nextInt();
+									scanner.nextLine();
+									
+									if(exit==0) {
+										break;
+									}
+									clearConsole();
+								}
+								
+								break;
+
+							}
+							break;
+						case 2:
+							while(true) {
+								clearConsole();
+								System.out.println("════════════════════════════════════");
+								System.out.println("            ΠΑΡΑΓΓΕΛΙΕΣ");
+								System.out.println("════════════════════════════════════");
+								int numberOfOrders = printOrdersFromSupplier();
+								
+								if(numberOfOrders==0) {
+									
+									while(true) {
+										
+										clearConsole();
+										System.out.println("Δεν υπάρχουν εκκρεμής παραγγελίες προμηθευτή");
+										System.out.println("Εισάγετε 0 για επιστροφή στο κεντρικό μενού");
+										
+										int exit = scanner.nextInt();
+										scanner.nextLine();
+										
+										if(exit==0) {
+											break;
+										}
+										
+									}
+									
+									break;
+								}
+								
+								System.out.println("Επιλογή εκκρεμής παραγγελίας προμηθευτή");
+								System.out.println("Εισάγετε το Id της παραγγελίας για ολοκλήρωση παραλαβής");
+								
+								int orderId = scanner.nextInt();
+								scanner.nextLine();
+								
+								Order order = searchOrderById(orderId);
+								clearConsole();
+								
+								if(order!=null && order.getOrderType()==OrderType.PURCHASE) {
+									System.out.println("Η παραλαβή ολοκληρώθηκε");
+									
+									
+									//EDW GINETE UPDATE STOCK
+									
+									
+								}else {
+									System.out.println("Η παραλαβή με Id "+orderId +" δεν βρέθηκε");
+								}
+								
+								while(true) {
+									System.out.println("Εισάγετε 0 για επιστροφή στο κεντρικό μενού");
+									
+									int exit = scanner.nextInt();
+									scanner.nextLine();
+									
+									if(exit==0) {
+										break;
+									}
+								}
+								
+								break;
+							}
+							break;
+						case 3:
+							System.out.println("Διαχείριση Εκκρεμών Παραγγελιών");
+							break;
+						case 4:
+							System.out.println("Έξοδος από το σύστημα...");
+							System.exit(0);
+					}
+				}
+
 			case "Ταμείο":
 				while(true) {
 					if(!flag) {
@@ -58,6 +186,7 @@ public class Main {
 									printPharmacyDetails(searchedPharmacy);
 										
 									if(searchedPharmacy!=null) {
+										
 										while(true) {
 											
 											printForProductInput();
@@ -72,6 +201,11 @@ public class Main {
 												}else {
 													clearConsole();
 													System.out.println("Επιτυχής Έκδοση Τιμολογίου\n");
+													
+													
+													//EDW GINETE UPDATE TO STOCK
+													
+													
 													break;
 												}
 											}
@@ -91,8 +225,11 @@ public class Main {
 												clearConsole();
 												System.out.println("Δεν βρέθηκε προϊόν με κωδικό: "+productCode+"\n");
 											}
+											
 										}
+										
 									}
+									
 								}else {
 									break;
 								}
@@ -119,6 +256,11 @@ public class Main {
 										clearConsole();
 										flag =true;
 										System.out.println("Επιτυχής Έκδοση Απόδειξης Λιανικής\n");
+										
+										
+										//EDW GINETE UPDATE TO STOCK
+										
+										
 										break;
 									}
 								}
@@ -142,16 +284,13 @@ public class Main {
 							
 							break;
 						case 3: System.out.println("Έξοδος από το σύστημα...");
-								System.exit(0);;
+								System.exit(0);
 						default:
 							System.out.println("Μη έγκυρη επιλογή!\n");
 							menuForCashier();
 					}
 				}
 				
-			case "Λογιστήριο":
-				
-				break;
 			case "Εξυπηρέτηση":
 				
 				while(true) {
@@ -206,10 +345,10 @@ public class Main {
 			System.out.println("════════════════════════════════════");
 
 			System.out.print("Όνομα Χρήστη: ");
-			String username = scanner.nextLine();
+			String username = scanner.nextLine().trim();
 
 			System.out.print("Κωδικός Πρόσβασης: ");
-			String password = scanner.nextLine();
+			String password = scanner.nextLine().trim();
 
 			for(User u : users) {
 
@@ -230,13 +369,19 @@ public class Main {
 	
 	
 	
-	private static void menuForWarehouse() {
+	private static int menuForWarehouse() {
 		System.out.println("\n════════════════════════════════════");
 		System.out.println("         ΚΕΝΤΡΙΚΟ ΜΕΝΟΥ");
 		System.out.println("════════════════════════════════════");
 		System.out.println("1. Διαχείριση Ορίων Αποθέματος");
-		System.out.println("2. Εκκρεμείς Παραγγελίες");
-		System.out.println("3. Έξοδος");
+		System.out.println("2. Παραλαβή Παραγγελίας Προμηθευτή");
+		System.out.println("3. Διαχείριση Εκκρεμών Παραγγελιών");
+		System.out.println("4. Έξοδος");
+		
+		int action = scanner.nextInt();
+		scanner.nextLine();
+		
+		return action;
 	}
 	
 	
@@ -304,6 +449,16 @@ public class Main {
 	
 	
 	
+	private static void automaticStockCheck() {
+		for(Product p : products) {
+			if(p.getStockLevel()<p.getSafetyLimit()) {
+				//paraggelia
+			}
+		}
+	}
+	
+	
+	
 	private static void printPharmacyDetails(Pharmacy pharmacy) {
 		
 		if(pharmacy!=null) {
@@ -345,6 +500,34 @@ public class Main {
 	
 	
 	
+	private static int printOrdersFromSupplier() {
+		int i = 0;
+		for(Order o : orders) {
+			if(o.getOrderType()==OrderType.PURCHASE) {
+				i++;
+				System.out.println(i+ ") Id: " + o.getOrderID());
+				System.out.println("   Total: "+ o.getTotalAmount());
+				System.out.println("   Date:" + o.getDate());
+				System.out.println();
+			}
+		}
+		
+		return i;
+	}
+	
+	
+	
+	private static Order searchOrderById(int orderId) {
+		for(Order o :orders) {
+			if(orderId == o.getOrderID()) {
+				return o;
+			}
+		}
+		return null;
+	}
+	
+	
+	
 	private static void printProductDetails(Product p) {
 		System.out.println("\nΌνομα: "+ p.getName());
 		System.out.println("Απόθεμα: " + p.getStockLevel());
@@ -374,7 +557,7 @@ public class Main {
 	        System.out.println();
 	    }
 	}
-	
+
 	
 
 }

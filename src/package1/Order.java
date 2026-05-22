@@ -2,13 +2,25 @@ package package1;
 
 public class Order {
 
-	
+	enum OrderType {
+	    PURCHASE,
+	    SALES
+	}
 	
 	private int orderID;
 	private String date;
 	private String status;
 	private double totalAmount;
-
+	private OrderType orderType;
+	
+	
+	Order(int orderID, String date, double totalAmount, OrderType orderType){
+		this.orderID = orderID;
+		this.date = date;
+		this.totalAmount = totalAmount;
+		this.orderType = orderType;
+	}
+	
 	
 	//GETTERS AND SETTERS
 
@@ -42,6 +54,14 @@ public class Order {
 
 	public void setTotalAmount(double totalAmount) {
 	    this.totalAmount = totalAmount;
+	}
+	
+	public OrderType getOrderType() {
+		return this.orderType;
+	}
+	
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
 	}
 	
 	
