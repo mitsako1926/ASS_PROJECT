@@ -73,12 +73,5 @@ public class User {
 	    return username.equals(user.username) && password.equals(user.password);
 	}
 	
-	void verifyPassword() {
-		
-	}
-	
-//	void getRole() {
-//		
-//	}
 	
 }

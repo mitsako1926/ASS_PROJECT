@@ -1,6 +1,5 @@
 package package1;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +29,22 @@ public class Order {
 
 	        this.totalAmount += product.getPrice() * quantity;
 	    }
+		if(orderType==OrderType.PURCHASE) {
+			this.status = "Αναμονή";
+		}else {
+			this.status = "Επεξεργασία";
+		}
+	}
+	
+	Order(int orderID, String date, OrderType orderType){
+		this.orderID = orderID;
+		this.date = date;
+		this.orderType = orderType;
+		if(orderType==OrderType.PURCHASE) {
+			this.status = "Αναμονή";
+		}else {
+			this.status = "Επεξεργασία";
+		}
 	}
 	
 	Order(){
@@ -86,16 +101,12 @@ public class Order {
 	
 	//METHODS
 	
-	void createOrder() {
-		
-	}
-	
 	void addProduct(Product product, int quantity) {
 		products.put(product, quantity);
+		
+	    this.totalAmount += product.getPrice() * quantity;
+	    
 	}
 	
-	void updateStatus() {
-		
-	}
 	
 }

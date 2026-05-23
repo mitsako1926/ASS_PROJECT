@@ -40,9 +40,6 @@ public class Invoice {
 	void generateInvoice() {
 		
 	}
-	
-	void print() {
-		
-	}
+
 	
 }

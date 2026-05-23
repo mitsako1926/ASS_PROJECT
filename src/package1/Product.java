@@ -3,7 +3,6 @@ package package1;
 public class Product {
 
 	
-	
 	private int productID;
 	private String name;
 	private double price;
@@ -79,14 +78,5 @@ public class Product {
 	}
 	
 	
-	//METHODS
-	
-	void checkStock() {
-		
-	}
-	
-	void updateStock() {
-		
-	}
 	
 }

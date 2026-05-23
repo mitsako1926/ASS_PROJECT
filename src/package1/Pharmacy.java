@@ -41,7 +41,6 @@ public class Pharmacy {
 	    this.phone = phone;
 	}
 	
-
 	
 	
 }

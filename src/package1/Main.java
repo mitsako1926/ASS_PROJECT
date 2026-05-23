@@ -1,5 +1,6 @@
 package package1;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
@@ -24,7 +25,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		users.add(new User("panos","dimis", "Αποθήκη"));
+		users.add(new User("panos","dimis", "Πώληση"));
 		
 		pharmacies.add(new Pharmacy(123, "69696969", "poytsou street"));
 		
@@ -144,12 +145,23 @@ public class Main {
 								Order order = searchOrderById(orderId);
 								clearConsole();
 								
-								if(order!=null && order.getOrderType()==OrderType.PURCHASE) {
+								if(order!=null && order.getOrderType()==OrderType.PURCHASE && order.getStatus().equals("Αναμονή")) {
 									System.out.println("Η παραλαβή ολοκληρώθηκε");
+									order.setStatus("Ολοκληρώθηκε");
 									
-									
-									//EDW GINETE UPDATE STOCK
-									
+									for(Product product : order.getProducts().keySet()) {
+
+								        int quantity = order.getProducts().get(product);
+
+								        for(Product p : products) {
+								        	if(p.getProductID()==product.getProductID()) {
+								        		p.setStockLevel(p.getStockLevel()+quantity);
+								        		break;
+								        	}
+								        	
+								        }
+								        
+								    }
 									
 								}else {
 									System.out.println("Η παραγγελία με Id "+orderId +" δεν βρέθηκε");
@@ -208,17 +220,17 @@ public class Main {
 								Order order = searchOrderById(orderId);
 								clearConsole();
 								
-								if(order!=null && order.getOrderType()==OrderType.SALES) {
+								if(order!=null && order.getOrderType()==OrderType.SALES && order.getStatus().equals("Επεξεργασία")) {
 									int input = printOrderList(order);
 									
 									if(input==1) {
 										break;
 									}
 									clearConsole();
-									System.out.println("Η παραγγελία με Id "+orderId +" είναι έτοιμη προς άποστολή");
-									
+									System.out.println("Η παραγγελία με Id "+ orderId +" είναι έτοιμη προς άποστολή");
+									order.setStatus("προς άποστολή");
 								}else {
-									System.out.println("Η παραγγελία με Id "+orderId +" δεν βρέθηκε");
+									System.out.println("Η παραγγελία με Id "+ orderId +" δεν βρέθηκε");
 								}
 								
 								while(true) {
@@ -231,6 +243,7 @@ public class Main {
 										break;
 									}
 								}
+								
 								break;
 							}
 							
@@ -241,8 +254,10 @@ public class Main {
 					}
 				}
 
-			case "Ταμείο":
+			case "Πώληση":
+				
 				while(true) {
+					
 					if(!flag) {
 						clearConsole();
 					}
@@ -281,11 +296,6 @@ public class Main {
 												}else {
 													clearConsole();
 													System.out.println("Επιτυχής Έκδοση Τιμολογίου\n");
-													
-													
-													//EDW GINETE UPDATE TO STOCK
-													
-													
 													break;
 												}
 											}
@@ -295,9 +305,22 @@ public class Main {
 											if(product!=null) {
 												clearConsole();
 												printProductDetails(product);
+												
 												System.out.println("Ποσότητα: ");
 												int quantity = scanner.nextInt();
 												scanner.nextLine();
+												
+												int randomId = (int)(Math.random()*100000);
+												Order orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.SALES);
+												
+												orderNew.addProduct(product, quantity);
+												orders.add(orderNew);
+												
+												if(product.getStockLevel()<=quantity) {
+													product.setStockLevel(0);
+												}else {
+													product.setStockLevel(product.getStockLevel()-quantity);
+												}
 												
 												clearConsole();
 												calculateAndPrintTotalWholesale(quantity, product);
@@ -337,10 +360,6 @@ public class Main {
 										flag =true;
 										System.out.println("Επιτυχής Έκδοση Απόδειξης Λιανικής\n");
 										
-										
-										//EDW GINETE UPDATE TO STOCK
-										
-										
 										break;
 									}
 								}
@@ -351,8 +370,15 @@ public class Main {
 									clearConsole();
 									printProductDetails(product);
 									System.out.println("Ποσότητα: ");
+									
 									int quantity = scanner.nextInt();
 									scanner.nextLine();
+									
+									if(product.getStockLevel()<=quantity) {
+										product.setStockLevel(0);
+									}else {
+										product.setStockLevel(product.getStockLevel()-quantity);
+									}
 									
 									clearConsole();
 									calculateAndPrintTotalRetail(quantity, product);
@@ -411,7 +437,6 @@ public class Main {
 				break;
 		}
 		
-		
 		scanner.close();
 	}
 	
@@ -464,11 +489,6 @@ public class Main {
 		return action;
 	}
 	
-	
-	
-	private static void menuForAccounting() {
-		
-	}
 	
 	
 	private static int menuForSearch() {
@@ -529,12 +549,26 @@ public class Main {
 	
 	
 	
-	private static void automaticStockCheck() {
+	private static Product searchProductCode(int code) {
+		
 		for(Product p : products) {
-			if(p.getStockLevel()<p.getSafetyLimit()) {
-				//paraggelia
+			if(code==p.getProductID()) {
+				return p;
 			}
 		}
+		return null;
+		
+	}
+	
+	
+	
+	private static Order searchOrderById(int orderId) {
+		for(Order o :orders) {
+			if(orderId == o.getOrderID()) {
+				return o;
+			}
+		}
+		return null;
 	}
 	
 	
@@ -599,26 +633,13 @@ public class Main {
 	
 	
 	
-	private static Product searchProductCode(int code) {
-		
-		for(Product p : products) {
-			if(code==p.getProductID()) {
-				return p;
-			}
-		}
-		return null;
-		
-	}
-	
-	
-	
 	private static int printOrdersFromSupplier() {
 		int i = 0;
 		for(Order o : orders) {
-			if(o.getOrderType()==OrderType.PURCHASE) {
+			if(o.getOrderType()==OrderType.PURCHASE && o.getStatus().equals("Αναμονή")) {
 				i++;
 				System.out.println(i+ ") Id: " + o.getOrderID());
-				System.out.println("   Total: "+ o.getTotalAmount());
+				System.out.printf("   Total: %.2f€\n", o.getTotalAmount());
 				System.out.println("   Date:" + o.getDate());
 				System.out.println();
 			}
@@ -631,7 +652,7 @@ public class Main {
 	private static int printOrdersForSale(){
 		int i = 0;
 		for(Order o : orders) {
-			if(o.getOrderType()==OrderType.SALES) {
+			if(o.getOrderType()==OrderType.SALES && o.getStatus().equals("Επεξεργασία")) {
 				i++;
 				System.out.println(i+ ") Id: " + o.getOrderID());
 				System.out.println("   Total: "+ o.getTotalAmount());
@@ -644,21 +665,25 @@ public class Main {
 	}
 	
 	
-	private static Order searchOrderById(int orderId) {
-		for(Order o :orders) {
-			if(orderId == o.getOrderID()) {
-				return o;
-			}
-		}
-		return null;
-	}
-	
-	
 	
 	private static void printProductDetails(Product p) {
 		System.out.println("\nΌνομα: "+ p.getName());
 		System.out.println("Απόθεμα: " + p.getStockLevel());
 		System.out.println("Τιμή ανά μονάδα: " + p.getPrice());
+	}
+	
+	
+	
+	private static void automaticStockCheck() {
+		for(Product p : products) {
+			if(p.getStockLevel()<p.getSafetyLimit()) {
+				int randomId = (int)(Math.random()*100000);
+				Order orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.PURCHASE);
+				
+				orderNew.addProduct(p, 10);
+				orders.add(orderNew);
+			}
+		}
 	}
 	
 	
