@@ -1,5 +1,9 @@
 package package1;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Order {
 
 	enum OrderType {
@@ -12,13 +16,24 @@ public class Order {
 	private String status;
 	private double totalAmount;
 	private OrderType orderType;
+	private Map<Product,Integer> products = new HashMap<Product,Integer>();
 	
 	
-	Order(int orderID, String date, double totalAmount, OrderType orderType){
+	Order(int orderID, String date, OrderType orderType, Map<Product,Integer> products){
 		this.orderID = orderID;
 		this.date = date;
-		this.totalAmount = totalAmount;
 		this.orderType = orderType;
+		this.products = products;
+		for(Product product : products.keySet()) {
+
+	        int quantity = products.get(product);
+
+	        this.totalAmount += product.getPrice() * quantity;
+	    }
+	}
+	
+	Order(){
+		
 	}
 	
 	
@@ -64,6 +79,10 @@ public class Order {
 		this.orderType = orderType;
 	}
 	
+	public Map<Product, Integer> getProducts(){
+		return this.products;
+	}
+	
 	
 	//METHODS
 	
@@ -71,8 +90,8 @@ public class Order {
 		
 	}
 	
-	void addProduct() {
-		
+	void addProduct(Product product, int quantity) {
+		products.put(product, quantity);
 	}
 	
 	void updateStatus() {

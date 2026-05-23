@@ -1,6 +1,7 @@
 package package1;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 import package1.Order.OrderType;
@@ -32,10 +33,26 @@ public class Main {
 		products.add(new Product(123,"mouni",12,12,5));
 		products.add(new Product(1234,"dawn",58,9,5));
 		
-		orders.add(new Order(1,"21/06/2008",900.3,OrderType.PURCHASE));
-		orders.add(new Order(2,"11/09/2008",203,OrderType.SALES));
-		orders.add(new Order(3,"1/06/2008",123,OrderType.SALES));
-		orders.add(new Order(4,"29/05/2008",334,OrderType.PURCHASE));
+		orders.add(new Order(1, "21/06/2008", OrderType.PURCHASE, Map.ofEntries(
+				                                                  Map.entry(products.get(0), 2),
+				                                                  Map.entry(products.get(1), 12),
+				                                                  Map.entry(products.get(2), 21))           ));
+		
+		orders.add(new Order(2, "11/09/2008", OrderType.SALES, Map.ofEntries(
+                											   Map.entry(products.get(3), 12),
+                											   Map.entry(products.get(2), 2),
+                											   Map.entry(products.get(1), 20))             ));
+		
+		orders.add(new Order(3, "1/06/2008", OrderType.SALES, Map.ofEntries(
+															  Map.entry(products.get(2), 8),
+														      Map.entry(products.get(3), 14),
+															  Map.entry(products.get(1), 3))              ));
+		
+		orders.add(new Order(4, "29/05/2008", OrderType.PURCHASE, Map.ofEntries(
+                												  Map.entry(products.get(0), 12),
+                											      Map.entry(products.get(1), 2),
+                												  Map.entry(products.get(3), 22))            ));
+		
 		
 		
 		logIn();
@@ -135,7 +152,7 @@ public class Main {
 									
 									
 								}else {
-									System.out.println("Η παραλαβή με Id "+orderId +" δεν βρέθηκε");
+									System.out.println("Η παραγγελία με Id "+orderId +" δεν βρέθηκε");
 								}
 								
 								while(true) {
@@ -153,7 +170,70 @@ public class Main {
 							}
 							break;
 						case 3:
-							System.out.println("Διαχείριση Εκκρεμών Παραγγελιών");
+							
+							while(true) {
+								clearConsole();
+								
+								System.out.println("════════════════════════════════════");
+								System.out.println("            ΠΑΡΑΓΓΕΛΙΕΣ");
+								System.out.println("════════════════════════════════════");
+								
+								int numOfOrders = printOrdersForSale();
+								
+								if(numOfOrders==0) {
+									while(true) {
+										
+										clearConsole();
+										System.out.println("Δεν υπάρχουν εκκρεμής παραγγελίες");
+										System.out.println("Εισάγετε 0 για επιστροφή στο κεντρικό μενού");
+										
+										int exit = scanner.nextInt();
+										scanner.nextLine();
+										
+										if(exit==0) {
+											break;
+										}
+										
+									}
+									
+									break;
+								}
+								
+								System.out.println("Επιλογή εκκρεμής παραγγελίας");
+								System.out.println("Εισάγετε το Id της παραγγελίας για προετοιμασία");
+								
+								int orderId = scanner.nextInt();
+								scanner.nextLine();
+								
+								Order order = searchOrderById(orderId);
+								clearConsole();
+								
+								if(order!=null && order.getOrderType()==OrderType.SALES) {
+									int input = printOrderList(order);
+									
+									if(input==1) {
+										break;
+									}
+									clearConsole();
+									System.out.println("Η παραγγελία με Id "+orderId +" είναι έτοιμη προς άποστολή");
+									
+								}else {
+									System.out.println("Η παραγγελία με Id "+orderId +" δεν βρέθηκε");
+								}
+								
+								while(true) {
+									System.out.println("Εισάγετε 0 για επιστροφή στο κεντρικό μενού");
+									
+									int exit = scanner.nextInt();
+									scanner.nextLine();
+									
+									if(exit==0) {
+										break;
+									}
+								}
+								break;
+							}
+							
 							break;
 						case 4:
 							System.out.println("Έξοδος από το σύστημα...");
@@ -479,6 +559,38 @@ public class Main {
 	
 	
 	
+	private static int printOrderList(Order order) {
+		System.out.println("Προϊόντα παραγγελίας με Id: "+ order.getOrderID());
+        System.out.println("------------------------------------");
+
+		for(Product product : order.getProducts().keySet()) {
+
+	        int quantity = order.getProducts().get(product);
+
+	        System.out.println("Κωδικός   : "+ product.getProductID());
+
+	        System.out.println("Προϊόν    : "+ product.getName());
+
+	        System.out.printf("Τιμή      : %.2f€\n",product.getPrice());
+
+	        System.out.println("Ποσότητα  : "+ quantity);
+
+	        System.out.println("------------------------------------");
+	    }
+
+	    System.out.printf("Συνολικό Ποσό: %.2f€\n",order.getTotalAmount());
+	    
+	    System.out.println("Εισάγετε 0 για ολοκλήρωση συσκευασίας");
+	    System.out.println("Εισάγετε 1 για έξοδο");
+	    
+	    int action = scanner.nextInt();
+	    scanner.nextLine();
+	    
+	    return action;
+	}
+	
+	
+	
 	private static void printForProductInput(){
 		System.out.println("Οριστικοποίηση και Έκδοση Τιμολογίου → 0");
 		System.out.println("\nEισάγετε τον κωδικό του προϊόντος προς προσθήκη");
@@ -515,6 +627,21 @@ public class Main {
 		return i;
 	}
 	
+	
+	private static int printOrdersForSale(){
+		int i = 0;
+		for(Order o : orders) {
+			if(o.getOrderType()==OrderType.SALES) {
+				i++;
+				System.out.println(i+ ") Id: " + o.getOrderID());
+				System.out.println("   Total: "+ o.getTotalAmount());
+				System.out.println("   Date:" + o.getDate());
+				System.out.println();
+			}
+		}
+		
+		return i;
+	}
 	
 	
 	private static Order searchOrderById(int orderId) {
