@@ -25,11 +25,11 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		users.add(new User("panos","dimis", "Πώληση"));
+		users.add(new User("panos","dimis","Πώληση"));
 		
 		pharmacies.add(new Pharmacy(123, "69696969", "poytsou street"));
 		
-		products.add(new Product(1,"dildo",39.99,10,5));
+		products.add(new Product(11,"dildo",39.99,10,5));
 		products.add(new Product(12,"poutsos",9.99,33,5));
 		products.add(new Product(123,"mouni",12,12,5));
 		products.add(new Product(1234,"dawn",58,9,5));
@@ -79,7 +79,7 @@ public class Main {
 								System.out.println("════════════════════════════════════");
 								
 								for(Product p : products) {
-									printProductDetails(p);
+									printProductDetailsWholesale(p);
 									
 									System.out.println("\nEισάγετε το κατώτερο όριο άσφαλείας ");
 									
@@ -146,6 +146,13 @@ public class Main {
 								clearConsole();
 								
 								if(order!=null && order.getOrderType()==OrderType.PURCHASE && order.getStatus().equals("Αναμονή")) {
+									int input = printOrderList(order);
+									
+									if(input==1) {
+										break;
+									}
+									
+									clearConsole();
 									System.out.println("Η παραλαβή ολοκληρώθηκε");
 									order.setStatus("Ολοκληρώθηκε");
 									
@@ -270,14 +277,17 @@ public class Main {
 						case 1: 
 							total = 0;
 							flag = false;
+							boolean newOrder = true;
 							
 							while(true) {
-								String keyword = newWholesaleSale().trim();
+								clearConsole();
+								int afm = newWholesaleSale();
 								
-								if(!keyword.equals("0")) {
-									Pharmacy searchedPharmacy = searchPharmacy(keyword);
+								if(afm!=0) {
+									Pharmacy searchedPharmacy = searchPharmacy(afm);
 									
 									clearConsole();
+									System.out.println("ASDFsdaSD");
 									printPharmacyDetails(searchedPharmacy);
 										
 									if(searchedPharmacy!=null) {
@@ -296,25 +306,36 @@ public class Main {
 												}else {
 													clearConsole();
 													System.out.println("Επιτυχής Έκδοση Τιμολογίου\n");
+													
+													
+													//INVOICE
+													
+													
 													break;
 												}
+											}else if(productCode==1) {
+												break;
 											}
 											
 											Product product = searchProductCode(productCode);
 											
 											if(product!=null) {
 												clearConsole();
-												printProductDetails(product);
+												printProductDetailsWholesale(product);
 												
 												System.out.println("Ποσότητα: ");
 												int quantity = scanner.nextInt();
 												scanner.nextLine();
 												
-												int randomId = (int)(Math.random()*100000);
-												Order orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.SALES);
+												Order orderNew = null;
+												if(newOrder) {
+													int randomId = (int)(Math.random()*100000);
+													orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.SALES);
+													newOrder = false;
+													orders.add(orderNew);
+												}
 												
 												orderNew.addProduct(product, quantity);
-												orders.add(orderNew);
 												
 												if(product.getStockLevel()<=quantity) {
 													product.setStockLevel(0);
@@ -345,6 +366,7 @@ public class Main {
 							flag = false;
 							while(true) {
 								System.out.println("Έκδοση Απόδειξης Λιανικής → 0 ");
+								System.out.println("Eισάγετε 1 για έξοδο");
 								System.out.println("\nEισάγετε τον κωδικό του προϊόντος προς προσθήκη");
 								System.out.print("Κωδικός προϊόντος: ");
 								int productCode = scanner.nextInt();
@@ -362,13 +384,15 @@ public class Main {
 										
 										break;
 									}
+								}else if(productCode==1) {
+									break;
 								}
 								
 								Product product = searchProductCode(productCode);
 								
 								if(product!=null) {
 									clearConsole();
-									printProductDetails(product);
+									printProductDetailsRetail(product);
 									System.out.println("Ποσότητα: ");
 									
 									int quantity = scanner.nextInt();
@@ -424,13 +448,12 @@ public class Main {
 						
 						if(product!=null) {
 							clearConsole();
-							printProductDetails(product);
+							printProductDetailsWholesale(product);
 						}else {
 							clearConsole();
 							System.out.println("Δεν βρέθηκε προϊόν με κωδικό: "+productCode+"\n");
 						}
 					}
-					
 					
 				}
 				
@@ -524,23 +547,26 @@ public class Main {
 	
 	
 	
-	private static String newWholesaleSale() {
+	private static int newWholesaleSale() {
 		System.out.println("\n════════════════════════════════════");
 		System.out.println("      ΝΕΑ ΧΟΝΔΡΙΚΗ ΠΩΛΗΣΗ");
 		System.out.println("════════════════════════════════════");
 		System.out.println("Αναζήτηση Πελάτη - Φαρμακείου");
 		System.out.println("------------------------------------");
-		System.out.print("Εισάγετε Όνομα ή ΑΦΜ Φαρμακείου (Κεντρικό μενού → 0): ");
+		System.out.print("Εισάγετε ΑΦΜ Φαρμακείου (Κεντρικό μενού → 0): ");
 		
-		return scanner.nextLine();
+		int action = scanner.nextInt();
+		scanner.nextLine();
+		
+		return action;
 	}
 	
 	
 	
-	private static Pharmacy searchPharmacy(String keyword) {
+	private static Pharmacy searchPharmacy(int afm) {
 		for(Pharmacy ph : pharmacies) {
 
-		    if(ph.getPharmacyID()==Integer.valueOf(keyword)) {
+		    if(ph.getPharmacyID()==afm) {
 		        return ph;
 		    }
 		}
@@ -614,7 +640,7 @@ public class Main {
 
 	    System.out.printf("Συνολικό Ποσό: %.2f€\n",order.getTotalAmount());
 	    
-	    System.out.println("Εισάγετε 0 για ολοκλήρωση συσκευασίας");
+	    System.out.println("Εισάγετε 0 για ολοκλήρωση");
 	    System.out.println("Εισάγετε 1 για έξοδο");
 	    
 	    int action = scanner.nextInt();
@@ -627,6 +653,7 @@ public class Main {
 	
 	private static void printForProductInput(){
 		System.out.println("Οριστικοποίηση και Έκδοση Τιμολογίου → 0");
+		System.out.println("Εισάγετε 1 για έξοδο");
 		System.out.println("\nEισάγετε τον κωδικό του προϊόντος προς προσθήκη");
 		System.out.print("Κωδικός προϊόντος: ");
 	}
@@ -649,13 +676,14 @@ public class Main {
 	}
 	
 	
+	
 	private static int printOrdersForSale(){
 		int i = 0;
 		for(Order o : orders) {
 			if(o.getOrderType()==OrderType.SALES && o.getStatus().equals("Επεξεργασία")) {
 				i++;
 				System.out.println(i+ ") Id: " + o.getOrderID());
-				System.out.println("   Total: "+ o.getTotalAmount());
+				System.out.printf("   Total: %.2f€\n", o.getTotalAmount());
 				System.out.println("   Date:" + o.getDate());
 				System.out.println();
 			}
@@ -666,24 +694,40 @@ public class Main {
 	
 	
 	
-	private static void printProductDetails(Product p) {
+	private static void printProductDetailsWholesale(Product p) {
 		System.out.println("\nΌνομα: "+ p.getName());
 		System.out.println("Απόθεμα: " + p.getStockLevel());
-		System.out.println("Τιμή ανά μονάδα: " + p.getPrice());
+		System.out.printf("Τιμή ανά μονάδα (Χονδρική): %.2f€\n", p.getPrice());
+	}
+	
+	
+	
+	private static void printProductDetailsRetail(Product p) {
+		System.out.println("\nΌνομα: "+ p.getName());
+		System.out.println("Απόθεμα: " + p.getStockLevel());
+		System.out.printf("Τιμή ανά μονάδα (Λιανική): %.2f€\n" , p.getPrice()+p.getPrice()*0.24);
 	}
 	
 	
 	
 	private static void automaticStockCheck() {
+		boolean flag = true;
+		Order orderNew = null;
+		
 		for(Product p : products) {
+		
 			if(p.getStockLevel()<p.getSafetyLimit()) {
-				int randomId = (int)(Math.random()*100000);
-				Order orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.PURCHASE);
 				
+				if(flag) {
+					int randomId = (int)(Math.random()*100000);
+					orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.PURCHASE);
+					orders.add(orderNew);
+					flag = false;
+				}
 				orderNew.addProduct(p, 10);
-				orders.add(orderNew);
 			}
 		}
+		
 	}
 	
 	
@@ -691,7 +735,7 @@ public class Main {
 	private static void calculateAndPrintTotalWholesale(int quantity, Product product) {
 		total+= product.getPrice()*quantity;
 		System.out.println("Σύνολο παραγγελίας (καθαρή αξία + ΦΠΑ): ");
-		System.out.printf("%.2f + %.2f \n", total, total * 0.24);
+		System.out.printf("%.2f€ + %.2f€ \n", total, total * 0.24);
 	}
 	
 	
@@ -699,7 +743,7 @@ public class Main {
 	private static void calculateAndPrintTotalRetail(int quantity, Product product) {
 		total+= product.getPrice()*quantity + product.getPrice()*quantity*0.24;
 		System.out.println("Σύνολο παραγγελίας: ");
-		System.out.printf("%.2f \n", total);
+		System.out.printf("%.2f€ \n", total);
 	}
 	
 	
