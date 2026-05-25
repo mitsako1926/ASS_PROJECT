@@ -13,17 +13,22 @@ public class Main {
 
 	static User loggedUser;
 	
-	static ArrayList<User> users = new ArrayList<>();
+	static ArrayList<User> users = new ArrayList<User>();
 	
-	static ArrayList<Pharmacy> pharmacies = new ArrayList<>(); 
+	static ArrayList<Pharmacy> pharmacies = new ArrayList<Pharmacy>(); 
 	
-	static ArrayList<Product> products = new ArrayList<>();
+	static ArrayList<Product> products = new ArrayList<Product>();
 	
-	static ArrayList<Order> orders = new ArrayList<>();
+	static ArrayList<Order> orders = new ArrayList<Order>();
+	
+	static ArrayList<Invoice> invoices = new ArrayList<Invoice>();
 
 	static double total = 0;
 	
 	public static void main(String[] args) {
+		
+		//DATA
+		
 		
 		users.add(new User("panos","dimis","Πώληση"));
 		
@@ -33,28 +38,35 @@ public class Main {
 		products.add(new Product(12,"poutsos",9.99,33,5));
 		products.add(new Product(123,"mouni",12,12,5));
 		products.add(new Product(1234,"dawn",58,9,5));
+	
+		Order order1 = new Order(1, "21/06/2008", OrderType.PURCHASE, Map.ofEntries(
+                   Map.entry(products.get(0), 2),
+                   Map.entry(products.get(1), 12),
+                   Map.entry(products.get(2), 21))             );
+		Order order2 = new Order(2, "11/09/2008", OrderType.SALES, Map.ofEntries(
+				   Map.entry(products.get(3), 12),
+				   Map.entry(products.get(2), 2),
+				   Map.entry(products.get(1), 20))             );
+		Order order3 = new Order(3, "1/06/2008", OrderType.SALES, Map.ofEntries(
+				   Map.entry(products.get(2), 8),
+			       Map.entry(products.get(3), 14),
+				   Map.entry(products.get(1), 3))              );
+		Order order4 = new Order(4, "29/05/2008", OrderType.PURCHASE, Map.ofEntries(
+				   Map.entry(products.get(0), 12),
+			       Map.entry(products.get(1), 2),
+				   Map.entry(products.get(3), 22))             );
 		
-		orders.add(new Order(1, "21/06/2008", OrderType.PURCHASE, Map.ofEntries(
-				                                                  Map.entry(products.get(0), 2),
-				                                                  Map.entry(products.get(1), 12),
-				                                                  Map.entry(products.get(2), 21))           ));
+		orders.add(order1);  orders.add(order2);  orders.add(order3);  orders.add(order4);
+	
+		Invoice invoice1 = new Invoice(order1.getOrderID(), order1.getDate().toString(), order1.getTotalAmount());
+		Invoice invoice2 = new Invoice(order2.getOrderID(), order2.getDate().toString(), order2.getTotalAmount());
+		Invoice invoice3 = new Invoice(order3.getOrderID(), order3.getDate().toString(), order3.getTotalAmount());
+		Invoice invoice4 = new Invoice(order4.getOrderID(), order4.getDate().toString(), order4.getTotalAmount());
 		
-		orders.add(new Order(2, "11/09/2008", OrderType.SALES, Map.ofEntries(
-                											   Map.entry(products.get(3), 12),
-                											   Map.entry(products.get(2), 2),
-                											   Map.entry(products.get(1), 20))             ));
-		
-		orders.add(new Order(3, "1/06/2008", OrderType.SALES, Map.ofEntries(
-															  Map.entry(products.get(2), 8),
-														      Map.entry(products.get(3), 14),
-															  Map.entry(products.get(1), 3))              ));
-		
-		orders.add(new Order(4, "29/05/2008", OrderType.PURCHASE, Map.ofEntries(
-                												  Map.entry(products.get(0), 12),
-                											      Map.entry(products.get(1), 2),
-                												  Map.entry(products.get(3), 22))            ));
+		invoices.add(invoice1);  invoices.add(invoice2);  invoices.add(invoice3);  invoices.add(invoice4);
 		
 		
+		//PROGRAM
 		
 		logIn();
 		
@@ -155,7 +167,7 @@ public class Main {
 									clearConsole();
 									System.out.println("Η παραλαβή ολοκληρώθηκε");
 									order.setStatus("Ολοκληρώθηκε");
-									
+																		
 									for(Product product : order.getProducts().keySet()) {
 
 								        int quantity = order.getProducts().get(product);
@@ -277,7 +289,7 @@ public class Main {
 						case 1: 
 							total = 0;
 							flag = false;
-							boolean newOrder = true;
+							boolean isNewOrder = true;
 							
 							while(true) {
 								clearConsole();
@@ -287,7 +299,6 @@ public class Main {
 									Pharmacy searchedPharmacy = searchPharmacy(afm);
 									
 									clearConsole();
-									System.out.println("ASDFsdaSD");
 									printPharmacyDetails(searchedPharmacy);
 										
 									if(searchedPharmacy!=null) {
@@ -305,12 +316,7 @@ public class Main {
 													continue;
 												}else {
 													clearConsole();
-													System.out.println("Επιτυχής Έκδοση Τιμολογίου\n");
-													
-													
-													//INVOICE
-													
-													
+													System.out.println("Επιτυχής Έκδοση Τιμολογίου\n");													
 													break;
 												}
 											}else if(productCode==1) {
@@ -318,6 +324,7 @@ public class Main {
 											}
 											
 											Product product = searchProductCode(productCode);
+											Order orderNew = null;
 											
 											if(product!=null) {
 												clearConsole();
@@ -327,12 +334,12 @@ public class Main {
 												int quantity = scanner.nextInt();
 												scanner.nextLine();
 												
-												Order orderNew = null;
-												if(newOrder) {
+												if(isNewOrder) {
 													int randomId = (int)(Math.random()*100000);
 													orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.SALES);
-													newOrder = false;
+													isNewOrder = false;
 													orders.add(orderNew);
+													invoices.add(new Invoice(orderNew.getOrderID(), orderNew.getDate().toString(), orderNew.getTotalAmount()));													
 												}
 												
 												orderNew.addProduct(product, quantity);
@@ -723,6 +730,8 @@ public class Main {
 					orderNew = new Order(randomId,LocalDate.now().toString(),OrderType.PURCHASE);
 					orders.add(orderNew);
 					flag = false;
+					
+					invoices.add(new Invoice(orderNew.getOrderID(), orderNew.getDate().toString(), orderNew.getTotalAmount()));
 				}
 				orderNew.addProduct(p, 10);
 			}

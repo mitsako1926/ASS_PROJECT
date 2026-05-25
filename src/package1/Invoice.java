@@ -8,6 +8,13 @@ public class Invoice {
 	private double amount;
 
 	
+	Invoice(int invoiceNumber, String issueDate, double amount){
+		this.invoiceNumber = invoiceNumber;
+		this.issueDate = issueDate;
+		this.amount = amount;
+	}
+	
+	
 	//GETTERS AND SETTERS
 
 	public int getInvoiceNumber() {
@@ -33,6 +40,7 @@ public class Invoice {
 	public void setAmount(double amount) {
 	    this.amount = amount;
 	}
+	
 	
 	
 	//METHODS
