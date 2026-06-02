@@ -2,16 +2,19 @@ package package1;
 
 public class Product {
 
+	static int ID = 0;
 	
 	private int productID;
-	private String name;
+	private String name, category;
 	private double price;
 	private int stockLevel;
 	private int safetyLimit;
 	
 	
-	public Product(int productID, String name, double price, int stockLevel, int safetyLimit) {
-		this.productID = productID;
+	public Product(String name, String category ,double price, int stockLevel, int safetyLimit) {
+		ID++;
+		this.category = category;
+		this.productID = ID;
 		this.name = name;
 		this.price = price;
 		this.stockLevel = stockLevel;
@@ -34,6 +37,14 @@ public class Product {
 
 	public void setName(String name) {
 	    this.name = name;
+	}
+	
+	public String getCategory() {
+	    return category;
+	}
+
+	public void setCategory(String category) {
+	    this.category = category;
 	}
 
 	public double getPrice() {
@@ -78,5 +89,22 @@ public class Product {
 	}
 	
 	
+	
+	@Override
+	public int hashCode() {
+	    return Integer.hashCode(productID);
+	}
+	
+	public void printData() {
+		System.out.println();
+	    System.out.println("════════════════════════════════════");
+	    System.out.println("Κωδικός Προϊόντος : " + productID);
+	    System.out.println("Όνομα             : " + name);
+	    System.out.println("Κατηγορία         : " + category);
+	    System.out.printf("Τιμή              : %.2f€\n", price);
+	    System.out.println("Διαθέσιμο Απόθεμα : " + stockLevel);
+	    System.out.println("Όριο Ασφαλείας    : " + safetyLimit);
+	    System.out.println("════════════════════════════════════");
+	}
 	
 }

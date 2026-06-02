@@ -2,43 +2,40 @@ package package1;
 
 public class Pharmacy {
 
-	
-	private int pharmacyID;
-	private String phone;
-	private String location;
+	private String name, afm, DOY;
 
 	
-	Pharmacy(int pharmacyID, String phone, String location){
-		this.pharmacyID = pharmacyID;
-		this.phone = phone;
-		this.location = location;
+	Pharmacy(String name, String afm, String DOY){
+		this.name = name;
+		this.afm = afm;
+		this.DOY = DOY;
 	}
 	
 	
 	//GETTERS AND SETTERS
 
-	public int getPharmacyID() {
-	    return pharmacyID;
+	public String getName() {
+	    return name;
 	}
 
-	public void setPharmacyID(int pharmacyID) {
-	    this.pharmacyID = pharmacyID;
+	public void setName(String name) {
+	    this.name = name;
 	}
 
-	public String getLocation() {
-	    return location;
+	public String getDOY() {
+	    return DOY;
 	}
 
-	public void setLocation(String location) {
-	    this.location = location;
+	public void setDOY(String DOY) {
+	    this.DOY = DOY;
 	}
 
-	public String getPhone() {
-	    return phone;
+	public String getAFM() {
+	    return afm;
 	}
 
-	public void setPhone(String phone) {
-	    this.phone = phone;
+	public void setAFM(String afm) {
+	    this.afm = afm;
 	}
 	
 	

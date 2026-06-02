@@ -7,19 +7,33 @@ public class Order {
 
 	enum OrderType {
 	    PURCHASE,
-	    SALES
+	    SALES,
+	    RETAIL
 	}
 	
+
+	public enum OrderStatus {
+		PENDING,
+		PROCESSING,
+		COMPLETED,
+		READY_TO_SHIP
+	}
+	
+	static int ID = 0;
+	
 	private int orderID;
+	private Customer customer;
+	private Employee issuedBy;
 	private String date;
-	private String status;
+	private OrderStatus status;
 	private double totalAmount;
 	private OrderType orderType;
 	private Map<Product,Integer> products = new HashMap<Product,Integer>();
 	
 	
-	Order(int orderID, String date, OrderType orderType, Map<Product,Integer> products){
-		this.orderID = orderID;
+	Order(String date, OrderType orderType, Map<Product,Integer> products, Customer customer, Employee issuedBy){
+		ID++;
+		this.orderID = ID;
 		this.date = date;
 		this.orderType = orderType;
 		this.products = products;
@@ -30,25 +44,24 @@ public class Order {
 	        this.totalAmount += product.getPrice() * quantity;
 	    }
 		if(orderType==OrderType.PURCHASE) {
-			this.status = "Αναμονή";
+			this.status = OrderStatus.PENDING;
 		}else {
-			this.status = "Επεξεργασία";
+			this.status = OrderStatus.PROCESSING;
 		}
+		this.customer = customer;
+		this.issuedBy = issuedBy;
 	}
 	
-	Order(int orderID, String date, OrderType orderType){
-		this.orderID = orderID;
+	Order(String date, OrderType orderType){
+		ID++;
+		this.orderID = ID;
 		this.date = date;
 		this.orderType = orderType;
 		if(orderType==OrderType.PURCHASE) {
-			this.status = "Αναμονή";
+			this.status = OrderStatus.PENDING;
 		}else {
-			this.status = "Επεξεργασία";
+			this.status = OrderStatus.PROCESSING;
 		}
-	}
-	
-	Order(){
-		
 	}
 	
 	
@@ -70,11 +83,11 @@ public class Order {
 	    this.date = date;
 	}
 
-	public String getStatus() {
+	public OrderStatus getStatus() {
 	    return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(OrderStatus status) {
 	    this.status = status;
 	}
 
@@ -98,6 +111,21 @@ public class Order {
 		return this.products;
 	}
 	
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+	public Customer getCustomer() {
+		return customer;
+	}
+	
+	public Employee getIssuedBy() {
+		return issuedBy;
+	}
+	
+	public void setIssuedBy(Employee employee) {
+		this.issuedBy = employee;
+	}
 	
 	//METHODS
 	
@@ -106,6 +134,60 @@ public class Order {
 		
 	    this.totalAmount += product.getPrice() * quantity;
 	    
+	}
+	
+	private String getDocumentType() {
+	    if(orderType == OrderType.RETAIL) {
+	        return "Απόδειξη";
+	    }
+
+	    return "Τιμολόγιο";
+	}
+	
+	public void printData() {
+		System.out.println();
+		
+
+	    if(orderType == OrderType.PURCHASE) {
+
+	        System.out.println("════════════════════════════════════");
+	        System.out.println("ΠΑΡΑΓΓΕΛΙΑ ΠΡΟΜΗΘΕΥΤΗ");
+	        System.out.println("Λόγος: Απόθεμα κάτω από το όριο ασφαλείας");
+	        System.out.println("------------------------------------");
+
+	        for(Product product : products.keySet()) {
+
+	            int quantity = products.get(product);
+
+	            System.out.println("Προϊόν   : " + product.getName());
+	            System.out.println("Ποσότητα : " + quantity);
+	            System.out.println("------------------------------------");
+	        }
+
+	    } else {
+
+	        System.out.println("════════════════════════════════════");
+	        System.out.println("Κωδικός Παραγγελίας : " + orderID);
+	        System.out.println("ΑΦΜ Πελάτη          : " + customer.getAFM());
+	        System.out.println("Τύπος Παραστατικού  : " + getDocumentType());
+	        System.out.println("Υπάλληλος           : " + issuedBy.getName());
+	        System.out.println("Κατάσταση           : " + status);
+
+	        for(Product product : products.keySet()) {
+
+	            int quantity = products.get(product);
+
+	            System.out.println(product.getName()
+	                    + " | Ποσότητα: " + quantity);
+	        }
+
+	        if(orderType==OrderType.RETAIL) {
+	        	System.out.printf("Σύνολο: %.2f€\n", totalAmount);
+	        }else {
+	        	System.out.printf("Σύνολο: %.2f€ + %.2f€ \n", totalAmount, totalAmount*0.24);
+	        }
+	        
+	    }
 	}
 	
 	

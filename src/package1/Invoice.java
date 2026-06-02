@@ -41,13 +41,6 @@ public class Invoice {
 	    this.amount = amount;
 	}
 	
-	
-	
-	//METHODS
-	
-	void generateInvoice() {
-		
-	}
 
 	
 }
