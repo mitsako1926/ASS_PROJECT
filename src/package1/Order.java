@@ -5,58 +5,71 @@ import java.util.Map;
 
 public class Order {
 
+	
 	enum OrderType {
-	    PURCHASE,
-	    SALES,
-	    RETAIL
+	    PURCHASE,//H ETERIA EXEI PARAGGEILEI APO PROMITHEFTH
+	    SALES,//H ETERIA EXEI POULISEI XONDRIKH
+	    RETAIL//H ETERIA EXEI POULISEI LIANIKI
 	}
 	
 
 	public enum OrderStatus {
-		PENDING,
-		PROCESSING,
-		COMPLETED,
-		READY_TO_SHIP
+		PENDING,//PERIMENOUME TON PROMITHEFTH NA MAS FEREI THN PARAGGELIA 
+		PROCESSING,//ETIMAZOUME EMEIS THN PARAGELIA GIA ENA PELATH XONDRIKHS
+		COMPLETED,//PARALABAME THN PARAGGELIA APO TON PROMITHEFTH
+		READY_TO_SHIP//H PARAGGELIA GIA ENA PELATH XONDIRKIS EINAI ETIMH NA STALEI
 	}
 	
+	//MOADIKO ID GIA TIN KATHE PARAGGELIA
 	static int ID = 0;
 	
 	private int orderID;
-	private Customer customer;
-	private Employee issuedBy;
+	private double totalAmount;
+	private Customer customer;//PIOS CUSTOMER ITAN
+	private Employee issuedBy;//PIOS IPALILOS EKANE TIN PARAGGELIA 
 	private String date;
 	private OrderStatus status;
-	private double totalAmount;
 	private OrderType orderType;
+	//KATHE PRODUCT EINAI MONADIKO GIAFTO KAI KEY
+	//KATHE PRODUCT SINDEETE ME TIN POSOTHTA POU EXEI ORISTEI STHN PARAGGELIA 
 	private Map<Product,Integer> products = new HashMap<Product,Integer>();
 	
 	
+	//AFTOS O CONSTRUCTOR EINAI GIA TA ARXIKA DEDOM,ENA
 	Order(String date, OrderType orderType, Map<Product,Integer> products, Customer customer, Employee issuedBy){
 		ID++;
 		this.orderID = ID;
 		this.date = date;
 		this.orderType = orderType;
 		this.products = products;
+		this.customer = customer;
+		this.issuedBy = issuedBy;
+		
 		for(Product product : products.keySet()) {
 
 	        int quantity = products.get(product);
 
-	        this.totalAmount += product.getPrice() * quantity;
+	        this.totalAmount += product.getPrice() * quantity; // TO TOTAL BGENEI APO TO QUANTITY TON PRODUCTS PROFANOS
 	    }
-		if(orderType==OrderType.PURCHASE) {
+		
+		if(orderType==OrderType.PURCHASE) {//ANALOGA ME TO AN EINIA PROMITHEFTH H PARAGELIA H OXI
 			this.status = OrderStatus.PENDING;
 		}else {
 			this.status = OrderStatus.PROCESSING;
 		}
-		this.customer = customer;
-		this.issuedBy = issuedBy;
+		
 	}
 	
+	
+	
+	//AFTON XRISIMOPIOUME OTAN KANOUME KAINOURGIA PARAGGELIA MESW TOU PROGRAM
+	//TA PROIONTA TA BAZOUME STADIAKA OPOS KAI TA ALA DEDOMENA
 	Order(String date, OrderType orderType){
 		ID++;
 		this.orderID = ID;
 		this.date = date;
 		this.orderType = orderType;
+		
 		if(orderType==OrderType.PURCHASE) {
 			this.status = OrderStatus.PENDING;
 		}else {
@@ -127,8 +140,12 @@ public class Order {
 		this.issuedBy = employee;
 	}
 	
+	
+	
 	//METHODS
 	
+	
+	//ETSI BAZOUME ENA PRODUCT STO ORDER MAS KAI AFKSANOUME KAI TO TOTAL
 	void addProduct(Product product, int quantity) {
 		products.put(product, quantity);
 		
@@ -136,6 +153,9 @@ public class Order {
 	    
 	}
 	
+	
+	
+	//GIA TIN PRINT DATA EINAI
 	private String getDocumentType() {
 	    if(orderType == OrderType.RETAIL) {
 	        return "Απόδειξη";
@@ -143,6 +163,8 @@ public class Order {
 
 	    return "Τιμολόγιο";
 	}
+	
+	
 	
 	public void printData() {
 		System.out.println();

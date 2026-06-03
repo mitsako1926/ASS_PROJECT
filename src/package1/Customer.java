@@ -2,6 +2,7 @@ package package1;
 
 public class Customer {
 
+	
     private String name, type, afm, DOY, status;
 
     public Customer(String name, String type, String afm, String DOY, String status) {
@@ -70,4 +71,5 @@ public class Customer {
     public String toString() {
         return name;
     }
+    
 }

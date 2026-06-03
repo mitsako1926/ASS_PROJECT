@@ -2,7 +2,7 @@ package package1;
 
 public class Invoice {
 
-	
+	//TO TIMOLOGIO EXEI IDIO invoiceNumber ME TO ID TOU ORDER POU SINDEETE
 	private int invoiceNumber;
 	private String issueDate;
 	private double amount;

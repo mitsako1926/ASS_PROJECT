@@ -2,6 +2,7 @@ package package1;
 
 public class Product {
 
+	//ETSI TO ID PANTA THA EINAI MONADIKO (SAN PRIMARY KEY ALA DE DOULEYOUME ME BASHS TORA)
 	static int ID = 0;
 	
 	private int productID;
@@ -72,6 +73,7 @@ public class Product {
 	}
 	
 	
+	//EQUALS KAI HASHCODE OSTE NA SIGGRINOUME PRODUCTS OPOS EMEIS THELUME (ME TO ID TOUS)
 	@Override
 	public boolean equals(Object o) {
 
@@ -94,6 +96,8 @@ public class Product {
 	public int hashCode() {
 	    return Integer.hashCode(productID);
 	}
+	
+	
 	
 	public void printData() {
 		System.out.println();

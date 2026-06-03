@@ -2,14 +2,16 @@ package package1;
 
 public class Employee {
 
+	//MONADIKO ID GIA TON KATHE IPALILO
 	static int ID = 0;
 	
 	private int userID;
 	private String name, username, password, role, userType;
 
+	//TO username kai password einai gia to login 
 	
-	Employee(String username, String password){
-		this.username = username;
+	Employee(String username, String password){// AFTOS O CONSTRUCTOR EINAI GIA NA BROUME EFKOLA AN IPARXEI USER ME TETIO username KAI password
+		this.username = username;              // MESW THS EQUALS XORIS NA SIGGRINOUME MIA TO ENA KIA MIA TO ALO
 		this.password = password;
 	}
 	
@@ -76,6 +78,8 @@ public class Employee {
 	
 	//METHODS
 	
+	
+	//SIGKRINOUME TOUS IPALILOUS ME BASH TO username KAI password (Mporoume kai me to id)
 	@Override
 	public boolean equals(Object o) {
 
